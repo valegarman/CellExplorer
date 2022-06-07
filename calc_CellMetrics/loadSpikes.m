@@ -145,6 +145,11 @@ if parameters.forceReload
     try
         format = session.spikeSorting{1}.format;
         clusteringpath = session.spikeSorting{1}.relativePath;
+        if isempty(clusteringpath)
+            % Looking for kilosort subfolder
+            file = dir(['Kilosort*']);
+            clusteringpath = file.name;
+        end
     end
     clusteringpath_full = fullfile(basepath,clusteringpath);
     
