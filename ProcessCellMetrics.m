@@ -98,6 +98,7 @@ addParameter(p,'includeInhibitoryConnections',false,@islogical);
 addParameter(p,'showGUI',false,@islogical);
 addParameter(p,'forceReload',false,@islogical);
 addParameter(p,'forceReloadSpikes',false,@islogical);
+addParameter(p,'forceReloadWaveformBasedMetrics',false,@islogical);
 addParameter(p,'submitToDatabase',false,@islogical);
 addParameter(p,'saveMat',true,@islogical);
 addParameter(p,'saveAs','cell_metrics',@isstr);
@@ -436,7 +437,8 @@ if any(contains(parameters.metrics,{'waveform_metrics','all'})) && ~any(contains
         good_channels = setdiff(1:session.extracellular.nChannels,bad_channels);
     end
     
-    if ~all(isfield(cell_metrics,{'waveforms','peakVoltage','troughToPeak','troughtoPeakDerivative','ab_ratio'})) || ~all(isfield(cell_metrics.waveforms,{'filt','filt_all'})) || parameters.forceReload == true
+    if ~all(isfield(cell_metrics,{'waveforms','peakVoltage','troughToPeak','troughtoPeakDerivative','ab_ratio'}))...
+            || ~all(isfield(cell_metrics.waveforms,{'filt','filt_all'})) || parameters.forceReload == true || parameters.forceReloadWaveformBasedMetrics == true
         dispLog('Getting waveforms',basename);
         field2copy = {'filtWaveform_std','rawWaveform','rawWaveform_std','rawWaveform_all','filtWaveform_all','timeWaveform_all','channels_all','filtWaveform','timeWaveform'};
         field2copyNewNames = {'filt_std','raw','raw_std','raw_all','filt_all','time_all','channels_all','filt','time'};
@@ -485,7 +487,7 @@ if any(contains(parameters.metrics,{'waveform_metrics','all'})) && ~any(contains
     end
     
     % Channel coordinates map, trilateration and length constant determined from waveforms across channels
-    if ~all(isfield(cell_metrics,{'trilat_x','trilat_y','peakVoltage_expFit'})) || parameters.forceReload == true
+    if ~all(isfield(cell_metrics,{'trilat_x','trilat_y','peakVoltage_expFit'})) || parameters.forceReload == true || parameters.forceReloadWaveformBasedMetrics == true
         chanCoordsFile = fullfile(basepath,[basename,'.chanCoords.channelInfo.mat']);
         if isfield(session.extracellular,'chanCoords') && isfield(session.extracellular.chanCoords,'x') && isfield(session.extracellular.chanCoords,'y') && ~isempty(session.extracellular.chanCoords.x) && ~isempty(session.extracellular.chanCoords.y)
             disp('   Using existing channel coordinates')
